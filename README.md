@@ -1,9 +1,9 @@
 # Azure Resource Group Terraform Module
 
-[![Validate](https://github.com/YOUR-ORG/YOUR-REPO/actions/workflows/validate.yml/badge.svg)](https://github.com/YOUR-ORG/YOUR-REPO/actions/workflows/validate.yml)
-[![Test](https://github.com/YOUR-ORG/YOUR-REPO/actions/workflows/test.yml/badge.svg)](https://github.com/YOUR-ORG/YOUR-REPO/actions/workflows/test.yml)
-[![Quality](https://github.com/YOUR-ORG/YOUR-REPO/actions/workflows/quality.yml/badge.svg)](https://github.com/YOUR-ORG/YOUR-REPO/actions/workflows/quality.yml)
-[![Release](https://github.com/YOUR-ORG/YOUR-REPO/actions/workflows/release.yml/badge.svg)](https://github.com/YOUR-ORG/YOUR-REPO/actions/workflows/release.yml)
+[![Validate](https://github.com/TaleLearnCode/terraform-azurerm-resource_group/actions/workflows/validate.yml/badge.svg)](https://github.com/TaleLearnCode/terraform-azurerm-resource_group/actions/workflows/validate.yml)
+[![Test](https://github.com/TaleLearnCode/terraform-azurerm-resource_group/actions/workflows/test.yml/badge.svg)](https://github.com/TaleLearnCode/terraform-azurerm-resource_group/actions/workflows/test.yml)
+[![Quality](https://github.com/TaleLearnCode/terraform-azurerm-resource_group/actions/workflows/quality.yml/badge.svg)](https://github.com/TaleLearnCode/terraform-azurerm-resource_group/actions/workflows/quality.yml)
+[![Release](https://github.com/TaleLearnCode/terraform-azurerm-resource_group/actions/workflows/release.yml/badge.svg)](https://github.com/TaleLearnCode/terraform-azurerm-resource_group/actions/workflows/release.yml)
 
 A production-ready Terraform module for creating and managing Azure Resource Groups with comprehensive features including management locks, location validation, and optional tagging.
 
@@ -366,7 +366,7 @@ This allows:
 
 ### Issues
 
-Report issues on [GitHub Issues](https://github.com/YOUR-ORG/YOUR-REPO/issues):
+Report issues on [GitHub Issues](https://github.com/TaleLearnCode/terraform-azurerm-resource_group/issues):
 - Include Terraform version
 - Include provider version
 - Include example configuration
@@ -376,7 +376,6 @@ Report issues on [GitHub Issues](https://github.com/YOUR-ORG/YOUR-REPO/issues):
 
 - 📖 [Module Examples](./examples/README.md)
 - 📖 [CI/CD Pipelines](./.github/GitHubActions.md)
-- 📖 [Configuration Guide](./CICD_SETUP.md)
 - 📖 [Changelog](./CHANGELOG.md)
 
 ### Community

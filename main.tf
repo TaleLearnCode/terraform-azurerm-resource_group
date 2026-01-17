@@ -1,6 +1,6 @@
 module "regions" {
   source  = "Azure/avm-utl-regions/azurerm"
-  version = "0.9.3"
+  version = "~> 0.9.3"
   enable_telemetry = false
 }
 

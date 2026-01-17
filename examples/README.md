@@ -73,41 +73,6 @@ module "resource_group" {
 
 ---
 
-### 3. [Region Selection by Display Name](./region-by-display-name/)
-**File:** [region-by-display-name/README.md](./region-by-display-name/README.md)
-
-Shows how to select Azure regions using human-friendly display names instead of region keys.
-
-**Demonstrates:**
-- Using the Azure Verified Modules (AVM) regions utility
-- Mapping display names to region keys
-- Error handling for invalid region names
-- Safer region selection in complex configurations
-
-**Key Features:**
-- Uses AVM regions module for accuracy
-- Supports human-readable region names (e.g., "East US")
-- Automatic key lookup from display name
-- Early failure detection with preconditions
-- Case-insensitive matching
-
-**Quick Start:**
-```hcl
-locals {
-  desired_display_name = "East US"
-  # Module automatically finds matching region key
-}
-
-module "resource_group" {
-  source = "../.."
-  
-  name     = "rg-by-display-name"
-  location = local.selected_region  # Auto-mapped from display name
-}
-```
-
----
-
 ## Module Variables
 
 All examples use the following module variables:
