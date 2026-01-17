@@ -1,0 +1,8 @@
+format: sarif
+
+severity: WARNING
+
+exclude:
+  - "**/tests/**"
+  - "**/.terraform/**"
+  - "**/examples/**/*/.terraform/**"

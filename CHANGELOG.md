@@ -2,7 +2,52 @@
 
 All notable changes to this Terraform module will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## 0.1.0 - 2026-01-17
+
+### Added
+
+- Complete module rebuild with enhanced features
+- Management lock support with `azurerm_management_lock` resource
+  - Supports lock kinds: `None`, `CanNotDelete`, `ReadOnly`
+  - Optional custom lock naming (defaults to `{resource-group-name}-lock`)
+- Location validation against Azure Verified Modules (AVM) regions utility
+  - Uses `Azure/avm-utl-regions/azurerm` module for accurate region mapping
+  - Lifecycle precondition ensures only valid Azure regions are accepted
+- Comprehensive module outputs:
+  - Resource group ID
+  - Resource group name
+- Three production-ready examples:
+  - **basic:** Minimal configuration with optional tags
+  - **locked:** Demonstrates management lock protection (CanNotDelete/ReadOnly)
+  - **region-by-display-name:** Safe region selection using display names
+- Complete test suite with 3 test cases:
+  - `basic_no_lock` - Verifies RG creation without locks
+  - `lock_default_name` - Verifies lock creation with auto-generated naming
+  - `lock_custom_name` - Verifies lock creation with custom names
+- GitHub Actions CI/CD pipelines:
+  - **validate.yml** - Code quality, TFLint, TFSec, CodeQL, module structure validation
+  - **test.yml** - Terraform tests, example validation, Azure integration
+  - **release.yml** - Automated semantic versioning and GitHub releases
+  - **quality.yml** - Daily vulnerability scans (Trivy, TruffleHog), documentation checks
+- Configuration files:
+  - `.tflint.hcl` - TFLint terraform plugin configuration
+  - `.tfsec.yaml` - TFSec security scanning configuration
+  - `.github/dependabot.yml` - Automated dependency updates
+- Comprehensive documentation:
+  - Main README.md with usage guide
+  - examples/README.md with example index and selection guide
+  - .github/GitHubActions.md with workflow documentation
+  - CICD_SETUP.md with pipeline configuration guide
+
+### Changed
+
+- Complete overhaul of module structure and variables
+- Enhanced input validation with lifecycle preconditions
+- Improved documentation and examples
+
+### Breaking Changes
+
+This is a rebuild release with significant structural changes from the pre-release.
 
 ## [0.0.1-pre] - 2024-10-09
 
