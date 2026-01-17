@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.0
+
+- 45834fe: Merge pull request #1 from TaleLearnCode/features/Rebuild
+- 81fc1b6: Add examples and tests for Azure Resource Group module
+
+
 All notable changes to this Terraform module will be documented in this file.
 
 ## 0.1.0 - 2026-01-17
