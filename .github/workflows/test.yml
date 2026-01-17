@@ -85,6 +85,7 @@ jobs:
           cd examples/${{ matrix.example }}
           terraform plan \
             -input=false \
+            -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
             -out=tfplan
 
       - name: Upload Plan Artifact - ${{ matrix.example }}
