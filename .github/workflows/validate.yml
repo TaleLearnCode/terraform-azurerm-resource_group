@@ -1,0 +1,139 @@
+name: Validate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  code-quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.x
+
+      - name: Terraform Init (no backend)
+        run: terraform init -backend=false
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: latest
+
+      - name: TFLint Init
+        run: tflint --init
+
+      - name: TFLint Check
+        run: tflint --format sarif > tflint.sarif || true
+
+      - name: Upload TFLint SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        if: always() && hashFiles('tflint.sarif') != ''
+        with:
+          sarif_file: tflint.sarif
+          category: tflint
+
+  security-scan:
+    name: Security Scan (TFSec)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run TFSec
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          sarif_file: tfsec.sarif
+          working_directory: .
+        continue-on-error: true
+
+      - name: Upload TFSec SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        if: always() && hashFiles('tfsec.sarif') != ''
+        with:
+          sarif_file: tfsec.sarif
+          category: tfsec
+
+  codeql:
+    name: CodeQL Security Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: cpp, python, javascript, ruby, java, go, csharp
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+  module-structure:
+    name: Module Structure Validation
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Verify README.md exists
+        run: |
+          if [ ! -f README.md ]; then
+            echo "❌ README.md not found in root directory"
+            exit 1
+          fi
+          echo "✅ README.md found"
+
+      - name: Verify examples directory exists
+        run: |
+          if [ ! -d examples ]; then
+            echo "❌ examples/ directory not found"
+            exit 1
+          fi
+          echo "✅ examples/ directory found"
+
+      - name: Verify tests directory exists
+        run: |
+          if [ ! -d tests ]; then
+            echo "❌ tests/ directory not found"
+            exit 1
+          fi
+          echo "✅ tests/ directory found"
+
+      - name: Validate example structure
+        run: |
+          for example in examples/*/; do
+            if [ ! -f "${example}main.tf" ]; then
+              echo "❌ main.tf not found in $example"
+              exit 1
+            fi
+            echo "✅ $example has main.tf"
+          done

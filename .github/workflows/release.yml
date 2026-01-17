@@ -1,0 +1,206 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (optional, auto-detected if not provided)'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      changelog: ${{ steps.changelog.outputs.changelog }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Get Last Tag
+        id: last-tag
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "tag=$LAST_TAG" >> $GITHUB_OUTPUT
+
+      - name: Check for [skip release]
+        id: skip-check
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          if echo "$COMMIT_MSG" | grep -q "\[skip release\]"; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "⏭️  Skipping release: [skip release] found in commit message"
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Analyze Commits
+        id: commits
+        if: steps.skip-check.outputs.skip == 'false'
+        run: |
+          LAST_TAG=${{ steps.last-tag.outputs.tag }}
+          
+          # Get commits since last tag
+          COMMITS=$(git log ${LAST_TAG}..HEAD --oneline)
+          echo "commits<<EOF" >> $GITHUB_OUTPUT
+          echo "$COMMITS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          # Determine version bump
+          if git log ${LAST_TAG}..HEAD --grep="BREAKING CHANGE" | grep -q .; then
+            BUMP="major"
+          elif git log ${LAST_TAG}..HEAD --oneline | grep -q "^.*feat"; then
+            BUMP="minor"
+          else
+            BUMP="patch"
+          fi
+          echo "bump=$BUMP" >> $GITHUB_OUTPUT
+
+      - name: Calculate Version
+        id: version
+        if: steps.skip-check.outputs.skip == 'false'
+        run: |
+          LAST_TAG=${{ steps.last-tag.outputs.tag }}
+          BUMP=${{ steps.commits.outputs.bump }}
+          
+          # Remove 'v' prefix
+          VERSION=${LAST_TAG#v}
+          MAJOR=$(echo $VERSION | cut -d. -f1)
+          MINOR=$(echo $VERSION | cut -d. -f2)
+          PATCH=$(echo $VERSION | cut -d. -f3)
+          
+          case $BUMP in
+            major)
+              MAJOR=$((MAJOR + 1))
+              MINOR=0
+              PATCH=0
+              ;;
+            minor)
+              MINOR=$((MINOR + 1))
+              PATCH=0
+              ;;
+            patch)
+              PATCH=$((PATCH + 1))
+              ;;
+          esac
+          
+          NEW_VERSION="v${MAJOR}.${MINOR}.${PATCH}"
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "📍 New Version: $NEW_VERSION"
+
+      - name: Generate Changelog
+        id: changelog
+        if: steps.skip-check.outputs.skip == 'false'
+        run: |
+          LAST_TAG=${{ steps.last-tag.outputs.tag }}
+          NEW_VERSION=${{ steps.version.outputs.version }}
+          
+          # Get commit messages since last tag
+          CHANGELOG=$(git log ${LAST_TAG}..HEAD --pretty=format:"- %h: %s")
+          
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "## $NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Update CHANGELOG.md
+        if: steps.skip-check.outputs.skip == 'false'
+        run: |
+          NEW_VERSION=${{ steps.version.outputs.version }}
+          
+          # Create temporary file with new changelog entry
+          {
+            echo "# Changelog"
+            echo ""
+            echo "## $NEW_VERSION"
+            echo ""
+            git log ${{ steps.last-tag.outputs.tag }}..HEAD --pretty=format:"- %h: %s"
+            echo ""
+            echo ""
+          } > /tmp/new_changelog.md
+          
+          # Append existing CHANGELOG.md if it exists
+          if [ -f CHANGELOG.md ]; then
+            tail -n +2 CHANGELOG.md >> /tmp/new_changelog.md
+          fi
+          
+          mv /tmp/new_changelog.md CHANGELOG.md
+
+      - name: Commit and Push Tag
+        if: steps.skip-check.outputs.skip == 'false'
+        run: |
+          NEW_VERSION=${{ steps.version.outputs.version }}
+          
+          git add CHANGELOG.md
+          git commit -m "chore: release $NEW_VERSION [skip release]" || echo "No changes to commit"
+          git tag -a $NEW_VERSION -m "Release $NEW_VERSION" || echo "Tag already exists"
+          git push origin main || echo "No commits to push"
+          git push origin $NEW_VERSION || echo "Tag already pushed"
+
+      - name: Create GitHub Release
+        if: steps.skip-check.outputs.skip == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const version = '${{ steps.version.outputs.version }}';
+            const changelog = `${{ steps.changelog.outputs.changelog }}`;
+            
+            const releaseBody = `${changelog}
+            
+            ## Installation
+            
+            To use this module in your Terraform configuration:
+            
+            \`\`\`hcl
+            module "resource_group" {
+              source = "terraform-registry-url/azurerm-resource-group/azurerm"
+              version = "${version.substring(1)}"
+              
+              name     = "my-resource-group"
+              location = "eastus"
+              
+              tags = {
+                environment = "production"
+              }
+            }
+            \`\`\`
+            
+            For more information, see the [README.md](https://github.com/${{ github.repository }}).`;
+            
+            try {
+              await github.rest.repos.createRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag_name: version,
+                name: version,
+                body: releaseBody,
+                draft: false,
+                prerelease: false
+              });
+              console.log(`✅ Release ${version} created successfully`);
+            } catch (error) {
+              console.log(`⚠️  Release ${version} may already exist: ${error.message}`);
+            }
+
+      - name: Skip Release Message
+        if: steps.skip-check.outputs.skip == 'true'
+        run: echo "⏭️  Release skipped due to [skip release] in commit message"
