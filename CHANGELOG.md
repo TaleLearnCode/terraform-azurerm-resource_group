@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.3
+
+- d15a75a: Merge pull request #4 from TaleLearnCode/dependabot/github_actions/github/codeql-action-4
+- efc9aa8: Bump github/codeql-action from 3 to 4
+
+
 ## v0.2.2
 
 - 4a24d35: Merge pull request #5 from TaleLearnCode/dependabot/github_actions/actions/download-artifact-7
