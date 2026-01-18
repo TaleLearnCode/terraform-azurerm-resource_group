@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.5
+
+- c662393: Merge pull request #2 from TaleLearnCode/dependabot/github_actions/actions/checkout-6
+- 6b02f3d: Bump actions/checkout from 4 to 6
+
+
 ## v0.2.4
 
 - 38e2e48: Merge pull request #3 from TaleLearnCode/dependabot/github_actions/terraform-linters/setup-tflint-6
