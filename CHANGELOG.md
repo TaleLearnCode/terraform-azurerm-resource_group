@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.2.0
+
+- 8b7f91d: Merge pull request #7 from TaleLearnCode/features/Rebuild
+- a1fff65: Reorganize output variables: move from output.tf to outputs.tf and ensure proper formatting
+- 8120044: Refactor TFLint and TFSec steps in CI workflow: change output format to compact, remove SARIF uploads, and streamline security scan process
+- 5796e15: Fix indentation in lock_custom_name test case variables
+- 115359f: Add example for selecting Azure region by display name using AVM
+- 62d094b: Add subscription_id variable to Terraform Plan step in CI workflow
+- 3c21eee: Update GitHub Actions documentation, change license to MIT, update README links, remove outdated example, and improve variable validation error message
+
+
 ## v0.1.0
 
 - 45834fe: Merge pull request #1 from TaleLearnCode/features/Rebuild
