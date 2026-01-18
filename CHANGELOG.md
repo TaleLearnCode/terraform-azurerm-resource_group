@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.2
+
+- 4a24d35: Merge pull request #5 from TaleLearnCode/dependabot/github_actions/actions/download-artifact-7
+- fadbbb5: Bump actions/download-artifact from 4 to 7
+
+
 ## v0.2.1
 
 - b222178: Merge pull request #6 from TaleLearnCode/dependabot/github_actions/actions/github-script-8
