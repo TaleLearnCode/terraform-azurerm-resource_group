@@ -33,9 +33,9 @@ run "lock_default_name" {
 run "lock_custom_name" {
   command = plan
 
-variables {
-  name     = "rg-custom-lock"
-  location = "westus2"
+  variables {
+    name     = "rg-custom-lock"
+    location = "westus2"
     lock = {
       kind = "ReadOnly"
       name = "custom-lock-name"
