@@ -3,10 +3,6 @@ mock_provider "azurerm" {}
 run "basic_no_lock" {
   command = plan
 
-  module {
-    source = "../"
-  }
-
   variables {
     name     = "rg-basic"
     location = "eastus"
@@ -23,10 +19,6 @@ run "basic_no_lock" {
 run "lock_default_name" {
   command = plan
 
-  module {
-    source = "../"
-  }
-
   variables {
     name     = "rg-locked"
     location = "eastus2"
@@ -41,13 +33,9 @@ run "lock_default_name" {
 run "lock_custom_name" {
   command = plan
 
-  module {
-    source = "../"
-  }
-
-  variables {
-    name     = "rg-custom-lock"
-    location = "westus2"
+variables {
+  name     = "rg-custom-lock"
+  location = "westus2"
     lock = {
       kind = "ReadOnly"
       name = "custom-lock-name"

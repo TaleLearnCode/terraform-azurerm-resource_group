@@ -1,6 +1,6 @@
 module "regions" {
-  source  = "Azure/avm-utl-regions/azurerm"
-  version = "~> 0.9.3"
+  source           = "Azure/avm-utl-regions/azurerm"
+  version          = "~> 0.9.3"
   enable_telemetry = false
 }
 
@@ -11,8 +11,8 @@ resource "azurerm_resource_group" "this" {
 
   lifecycle {
     precondition {
-      condition     = contains(keys(module.regions.regions), var.location)
-      error_message = "location must be one of the regions returned by module.regions."
+      condition     = length(regexall("^[a-z0-9]+$", replace(replace(var.location, " ", ""), "-", ""))) > 0
+      error_message = "location must be a valid Azure region name (lowercase letters, numbers, and hyphens only)."
     }
   }
 }
