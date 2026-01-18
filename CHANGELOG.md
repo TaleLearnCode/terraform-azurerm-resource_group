@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.4
+
+- 38e2e48: Merge pull request #3 from TaleLearnCode/dependabot/github_actions/terraform-linters/setup-tflint-6
+- f14bb3d: Bump terraform-linters/setup-tflint from 4 to 6
+
+
 ## v0.2.3
 
 - d15a75a: Merge pull request #4 from TaleLearnCode/dependabot/github_actions/github/codeql-action-4
