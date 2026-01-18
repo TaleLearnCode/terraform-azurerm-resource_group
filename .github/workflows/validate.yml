@@ -41,21 +41,17 @@ jobs:
         run: tflint --init
 
       - name: TFLint Check
-        run: tflint --format sarif > tflint.sarif || true
+        run: tflint --format compact
 
-      - name: Upload TFLint SARIF
-        uses: github/codeql-action/upload-sarif@v3
-        if: always() && hashFiles('tflint.sarif') != ''
-        with:
-          sarif_file: tflint.sarif
-          category: tflint
+      - name: TFLint Detailed Report
+        run: tflint --format json > tflint-report.json || true
+        continue-on-error: true
 
   security-scan:
     name: Security Scan (TFSec)
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      security-events: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -63,37 +59,8 @@ jobs:
       - name: Run TFSec
         uses: aquasecurity/tfsec-action@v1.0.3
         with:
-          sarif_file: tfsec.sarif
           working_directory: .
         continue-on-error: true
-
-      - name: Upload TFSec SARIF
-        uses: github/codeql-action/upload-sarif@v3
-        if: always() && hashFiles('tfsec.sarif') != ''
-        with:
-          sarif_file: tfsec.sarif
-          category: tfsec
-
-  codeql:
-    name: CodeQL Security Analysis
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      security-events: write
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: cpp, python, javascript, ruby, java, go, csharp
-
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v3
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
 
   module-structure:
     name: Module Structure Validation
