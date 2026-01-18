@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.1
+
+- b222178: Merge pull request #6 from TaleLearnCode/dependabot/github_actions/actions/github-script-8
+- c4afa78: Bump actions/github-script from 7 to 8
+
+
 ## v0.2.0
 
 - 8b7f91d: Merge pull request #7 from TaleLearnCode/features/Rebuild
