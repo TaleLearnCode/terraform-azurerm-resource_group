@@ -645,7 +645,7 @@ All workflows use current stable versions:
 | actions/upload-artifact | v4 | Store artifacts |
 | actions/download-artifact | v4 | Retrieve artifacts |
 | github/codeql-action | v3 | CodeQL analysis |
-| aquasecurity/tfsec-action | v1.0.6 | TFSec scanning |
+| aquasecurity/tfsec-action | v1.0.3 | TFSec scanning |
 | aquasecurity/trivy-action | master | Trivy scanning |
 | terraform-linters/setup-tflint | v4 | TFLint setup |
 | azure/login | v2 | Azure authentication |

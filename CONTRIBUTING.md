@@ -607,7 +607,7 @@ We appreciate all contributions, big and small!
 
 ### License
 
-By contributing, you agree that your contributions will be licensed under the [Mozilla Public License 2.0](./LICENSE).
+By contributing, you agree that your contributions will be licensed under the [MIT License](./LICENSE).
 
 ### Contributor License Agreement
 

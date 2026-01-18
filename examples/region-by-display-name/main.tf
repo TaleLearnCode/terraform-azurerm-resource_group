@@ -19,34 +19,42 @@ provider "azurerm" {
   features {}
 }
 
-# Use the AVM regions utility to select a region by its display name, then pass the region key into the module.
+# Use the Azure Verified Module for Regions to safely select region by display name
 module "regions" {
-  source           = "Azure/avm-utl-regions/azurerm"
-  version          = "~> 0.9.3"
-  enable_telemetry = false
+  source  = "Azure/avm-utl-regions/azurerm"
+  version = "~> 0.9"
 }
 
-locals {
-  desired_display_name = "East US"
-  region_keys_matching = [for key, region in module.regions.regions : key if lower(region.display_name) == lower(local.desired_display_name)]
-  selected_region      = length(local.region_keys_matching) > 0 ? element(local.region_keys_matching, 0) : ""
-}
-
+# Select the region by display name and use the region key for location
 module "resource_group" {
   source = "../.."
 
-  name     = "rg-region-by-display-name"
-  location = local.selected_region
+  name = "rg-region-by-name-example"
+  # Use region key instead of display name - access the 'name' property to get the region key
+  location = module.regions.regions_by_display_name["West US 2"].name
+
+  lock = {
+    kind = "None"
+    name = null
+  }
 
   tags = {
     environment = "test"
+    example     = "region-by-display-name"
   }
 }
 
-# Fail fast if the display name did not match any region keys.
-check "region_validation" {
-  assert {
-    condition     = local.selected_region != ""
-    error_message = "No region key matched the desired display name."
-  }
+output "resource_group_id" {
+  description = "The ID of the created Resource Group"
+  value       = module.resource_group.id
+}
+
+output "resource_group_name" {
+  description = "The name of the created Resource Group"
+  value       = module.resource_group.name
+}
+
+output "region_key" {
+  description = "The region key used for the Resource Group location"
+  value       = module.regions.regions_by_display_name["West US 2"]
 }

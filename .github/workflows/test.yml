@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  ARM_SUBSCRIPTION_ID: ${{ secrets.TEST_SUBSCRIPTION_ID }}
+  ARM_SUBSCRIPTION_ID: 95410236-d7ed-4e09-a4e6-e72a42765ca5
 
 jobs:
   terraform-test:
@@ -85,6 +85,7 @@ jobs:
           cd examples/${{ matrix.example }}
           terraform plan \
             -input=false \
+            -var="subscription_id=$ARM_SUBSCRIPTION_ID" \
             -out=tfplan
 
       - name: Upload Plan Artifact - ${{ matrix.example }}

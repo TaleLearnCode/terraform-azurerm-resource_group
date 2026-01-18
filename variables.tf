@@ -11,7 +11,7 @@ variable "location" {
 
   validation {
     condition     = contains(keys(module.regions.regions_by_name), var.location)
-    error_message = "The provided location is not a valid Azure region according to AVM regions_by_name."
+    error_message = "The provided location is not a valid Azure region according to AVM regions."
   }
 }
 
